@@ -29,43 +29,33 @@ Activate commands with `CTRL+P` on Windows/Linux or `Cmd+P` on Mac.
 ### App
 
 - `Run App`
+
+`grails run-app`
+
+`$ ./grailsw run-app --port=8090`
+
 - `Stop App`
 - `Run Command`
-
-### Project
-
-- `Clean Project`
-- `Compile Project`
-
-### Misc
-
-- `Grails Dependency Report`
-- `Grails Help`
-- `List Plugins`
-- `Console`
-- `Stats`
-- `Package Plugin`
-- `Maven Install`
-
-### Proxy
-
-- `Add Proxy Configuration`
-- `Add Proxy Configuration (With User & Password)`
-- `Clear Proxy Configuration`
-- `Remove Proxy Configuration`
-- `Set Proxy Configuration`
-
-### Documentation
-
-- `Generate Documentation`
-- `Migrate Docs`
 
 ### Builders
 
 - `Create App`
+
+`grails create-app GrailsEnterpriseApplication`
+
 - `Create Plugin`
+
+`grails create-plugin GrailsEnterpriseDomain`
+
 - `Create Domain Class`
+
+`grails create-domain-class Student`
+`grails create-domain-class org.ast.User`
+
 - `Create Controller`
+
+`grails create-controller Student`
+
 - `Create Service`
 - `Create Filter`
 - `Create Interceptor (Grails 3+)`
@@ -80,10 +70,70 @@ Activate commands with `CTRL+P` on Windows/Linux or `Cmd+P` on Mac.
 
 - `Generate WAR`
 - `Generate Views`
+
+```
+├── show.gsp
+├── index.gsp
+├── create.gsp
+└── edit.gsp
+```
+
 - `Generate Controllers`
 - `Generate All (Views and Controllers)`
+
+`grails generate-all Student`
+
 - `Test`
 - ``
+
+### Misc
+
+- `Grails Dependency Report`
+- `Grails Help`
+- `List Plugins`
+- `Console`
+- `Stats`
+- `Package Plugin`
+
+`grails package-plugin`
+
+Execute command on the `GrailsEnterpriseDomain` project. This command create a zip archive of your plugin but more importantely a plugin.xml file which later on is used by the main application on bootstrap, for loading and resolving possible dependencies of our domain plugin. So if our domain plugin would depend on other plugins, Grails would resolve those dependencies on application startup.
+
+- `Maven Install`
+
+### Project
+
+- `Clean Project`
+- `Compile Project`
+
+### Proxy
+
+- `Add Proxy Configuration`
+- `Add Proxy Configuration (With User & Password)`
+- `Clear Proxy Configuration`
+- `Remove Proxy Configuration`
+- `Set Proxy Configuration`
+
+### Documentation
+
+- `Generate Documentation`
+- `Migrate Docs`
+
+## TODO
+
+List profile
+
+`grails list-profiles`
+
+You can optionally specify a Profile for your Grails app. Profiles are available for many common application types, including rest-api, angular, react, and others, and you can even create your own.
+
+To use a profile, specify its name preceded by the -profile flag:
+
+`grails create-app myApp -profile rest-api`
+
+To get detailed information about a profile use the profile-info command.
+
+`$ grails profile-info plugin`
 
 ## Requirements
 

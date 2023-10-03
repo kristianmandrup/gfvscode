@@ -23,6 +23,63 @@ export class Dependency extends vscode.TreeItem {
   contextValue = "dependency";
 }
 
+// The grails application has the following folder structure.
+
+// ├── .gradle
+// ├── build
+// ├── gradle
+// ├── grails-app
+// ├── src
+// ├── .gitignore.txt
+// ├── build.gradle
+// ├── gradle
+// ├── gradlew
+// ├── gradlew.bat
+// ├── grailsw
+// ├── grailsw.bat
+// └── grails-wrapper
+
+// grails/-app
+
+// ├── assets
+// ├── conf
+// ├── controllers
+// ├── domain
+// ├── i18n
+// ├── init
+// ├── services
+// ├── taglib
+// ├── utils
+// └── views
+
+// The directory structure is followed for the most part by all applications because
+// artifacts are defined primarily by their root folder.
+// Controller class names end in 'Controller', and taglibs and services have similar
+// naming conventions, but domain classes don't have any name restrictions.
+// So it's the location under grails-app/domain that defines a groovy class as a domain class.
+
+// %PROJECT_HOME%
+//     + grails-app
+//        + conf                 ---> location of configuration artifacts
+//            + hibernate        ---> optional hibernate config
+//            + spring           ---> optional spring config
+//        + controllers          ---> location of controller artifacts
+//        + domain               ---> location of domain classes
+//        + i18n                 ---> location of message bundles for i18n
+//        + services             ---> location of services
+//        + taglib               ---> location of tag libraries
+//        + util                 ---> location of special utility classes
+//        + views                ---> location of views
+//            + layouts          ---> location of layouts
+//    + lib
+//    + scripts                  ---> scripts
+//    + src
+//        + groovy               ---> optional; location for Groovy source files
+//                                    (of types other than those in grails-app/*)
+//        + java                 ---> optional; location for Java source files
+//    + test                     ---> generated test classes
+//    + web-app
+//        + WEB-INF
 export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
   constructor(private workspaceRoot: string) {}
 
@@ -41,7 +98,7 @@ export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
 
     if (views) {
       return Promise.resolve(
-        this.getViewsInProject(
+        this.getViews(
           path.join(
             this.workspaceRoot,
             "node_modules",
@@ -60,7 +117,7 @@ export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
 
     if (controllers) {
       if (this.pathExists(projectRootPath)) {
-        return Promise.resolve(this.getControllersInProject(projectRootPath));
+        return Promise.resolve(this.getControllers(projectRootPath));
       } else {
         vscode.window.showInformationMessage("Workspace has no package.json");
         return Promise.resolve([]);
@@ -68,7 +125,35 @@ export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
     }
   }
 
-  private getControllersInProject(grailsPath: string): Dependency[] {
+  private getLocalizeBundles(grailsPath: string): Dependency[] {
+    const workspaceRoot = this.workspaceRoot;
+    if (this.pathExists(grailsPath) && workspaceRoot) {
+    }
+    return [];
+  }
+
+  private getTagLibs(grailsPath: string): Dependency[] {
+    const workspaceRoot = this.workspaceRoot;
+    if (this.pathExists(grailsPath) && workspaceRoot) {
+    }
+    return [];
+  }
+
+  private getDomainModels(grailsPath: string): Dependency[] {
+    const workspaceRoot = this.workspaceRoot;
+    if (this.pathExists(grailsPath) && workspaceRoot) {
+    }
+    return [];
+  }
+
+  private getServices(grailsPath: string): Dependency[] {
+    const workspaceRoot = this.workspaceRoot;
+    if (this.pathExists(grailsPath) && workspaceRoot) {
+    }
+    return [];
+  }
+
+  private getControllers(grailsPath: string): Dependency[] {
     const workspaceRoot = this.workspaceRoot;
     if (this.pathExists(grailsPath) && workspaceRoot) {
     }
@@ -78,7 +163,7 @@ export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
   /**
    * Given the path to package.json, read all its dependencies and devDependencies.
    */
-  private getViewsInProject(grailsPath: string): Dependency[] {
+  private getViews(grailsPath: string): Dependency[] {
     const workspaceRoot = this.workspaceRoot;
     if (this.pathExists(grailsPath) && workspaceRoot) {
       const packageJson = JSON.parse(fs.readFileSync(grailsPath, "utf-8"));
