@@ -9,6 +9,8 @@ export enum GrailsItemType {
   ViewFolder,
   DomainModelFolder,
   ServiceFolder,
+  TagLib,
+  TagLibFolder,
 }
 
 export class GrailsTreeItem extends vscode.TreeItem {
