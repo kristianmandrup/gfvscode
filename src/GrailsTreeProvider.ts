@@ -3,27 +3,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { parsePom } from "./parse-pom";
 import { parseGradle } from "./parse-gradle";
-
-export class Dependency extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    private readonly version: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly command?: vscode.Command
-  ) {
-    super(label, collapsibleState);
-
-    this.tooltip = `${this.label}-${this.version}`;
-    this.description = this.version;
-  }
-
-  iconPath = {
-    light: path.join(__filename, "..", "..", "resources", "light", "gear.svg"),
-    dark: path.join(__filename, "..", "..", "resources", "dark", "gear.svg"),
-  };
-
-  contextValue = "dependency";
-}
+import { readGlob } from "./glob";
+import { BaseItem, ControllerItem, DomainItem, ViewItem } from "./items";
 
 // The grails application has the following folder structure.
 
@@ -82,25 +63,41 @@ export class Dependency extends vscode.TreeItem {
 //    + test                     ---> generated test classes
 //    + web-app
 //        + WEB-INF
-export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
+export class GrailsTreeProvider implements vscode.TreeDataProvider<BaseItem> {
   grailsPath: string;
 
   constructor(private workspaceRoot: string) {}
 
-  getTreeItem(element: Dependency): vscode.TreeItem {
+  getTreeItem(element: BaseItem): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: Dependency): Thenable<Dependency[]> {
+  toItem(filePath: string, type: string, version?: string) {
+    const label = path.basename(filePath);
+    switch (type) {
+      case "controller":
+        return new ControllerItem(label);
+      case "domainModel":
+        return new DomainItem(label);
+      case "view":
+        return new ViewItem(label);
+    }
+  }
+
+  getChildren(element?: BaseItem): Thenable<BaseItem[]> {
     if (!this.workspaceRoot) {
-      vscode.window.showInformationMessage("No dependency in empty workspace");
+      vscode.window.showInformationMessage("No Item in empty workspace");
       return Promise.resolve([]);
     }
     this.grailsPath = this.workspaceRoot;
 
     const pom = this.getPomDetails();
     const gradle = this.getGradleDetails();
+    const controllers = this.getControllers();
+    const views = this.getViews();
+    const domainModels = this.getDomainModels();
     const bundles = this.getLocalizeBundles();
+    const tagLibs = this.getTagLibs();
   }
 
   private getPomDetails() {
@@ -119,69 +116,59 @@ export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
     }
   }
 
-  private getLocalizeBundles(): Dependency[] {
-    const workspaceRoot = this.workspaceRoot;
+  private async getLocalizeBundles(): Promise<string[]> {
     const folderPath = path.join("i18", this.grailsPath);
-    if (this.pathExists(folderPath) && workspaceRoot) {
-    }
-    return [];
+    if (!this.pathExists(folderPath)) return [];
+    return await readGlob(folderPath, "*.messages.properties");
   }
 
-  private getTagLibs(grailsPath: string): Dependency[] {
-    const workspaceRoot = this.workspaceRoot;
+  private async getTagLibs(): Promise<string[]> {
     const folderPath = path.join("taglibs", this.grailsPath);
-    if (this.pathExists(folderPath) && workspaceRoot) {
-    }
-    return [];
+    if (!this.pathExists(folderPath)) return [];
+    return await readGlob(folderPath, "*TagLib.groovy");
   }
 
-  private getDomainModels(grailsPath: string): Dependency[] {
-    const workspaceRoot = this.workspaceRoot;
+  private async getDomainModels(): Promise<string[]> {
     const folderPath = path.join("domain", this.grailsPath);
-    if (this.pathExists(folderPath) && workspaceRoot) {
-    }
-    return [];
+    if (!this.pathExists(folderPath)) return [];
+    return await readGlob(folderPath, "*Model.groovy");
   }
 
-  private getServices(grailsPath: string): Dependency[] {
-    const workspaceRoot = this.workspaceRoot;
+  private async getServices(): Promise<string[]> {
     const folderPath = path.join("services", this.grailsPath);
-    if (this.pathExists(folderPath) && workspaceRoot) {
-    }
-    return [];
+    if (!this.pathExists(folderPath)) return [];
+    return await readGlob(folderPath, "*Service.groovy");
   }
 
-  private getControllers(): Dependency[] {
+  private async getControllers(): Promise<string[]> {
     const folderPath = path.join("controllers", this.grailsPath);
-    if (this.pathExists(folderPath) && this.workspaceRoot) {
-    }
-    return [];
+    if (!this.pathExists(folderPath)) return [];
+    return await readGlob(folderPath, "*Controller.groovy");
   }
 
   /**
    * Given the path to package.json, read all its dependencies and devDependencies.
    */
-  private getViews(): Dependency[] {
+  private async getViews(): Promise<string[]> {
     const folderPath = path.join("views", this.grailsPath);
-    if (this.pathExists(folderPath) && this.workspaceRoot) {
-    }
-    return [];
+    if (!this.pathExists(folderPath)) return [];
+    return await readGlob(folderPath, "*View.groovy");
   }
 
   //   if (this.pathExists(grailsPath) && workspaceRoot) {
   //     const packageJson = JSON.parse(fs.readFileSync(grailsPath, "utf-8"));
 
-  //     const toDep = (moduleName: string, version: string): Dependency => {
+  //     const toDep = (moduleName: string, version: string): Item => {
   //       if (
   //         this.pathExists(path.join(workspaceRoot, "node_modules", moduleName))
   //       ) {
-  //         return new Dependency(
+  //         return new Item(
   //           moduleName,
   //           version,
   //           vscode.TreeItemCollapsibleState.Collapsed
   //         );
   //       } else {
-  //         return new Dependency(
+  //         return new Item(
   //           moduleName,
   //           version,
   //           vscode.TreeItemCollapsibleState.None,

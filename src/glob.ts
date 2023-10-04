@@ -1,6 +1,6 @@
 import * as readdirGlob from "readdir-glob";
 
-export const readGlob = (
+export const readGlob = async (
   rootPath: string,
   pattern: string
 ): Promise<string[]> => {
@@ -9,7 +9,7 @@ export const readGlob = (
     const results: any[] = [];
 
     globber.on("match", (m) => {
-      results.push(m);
+      results.push(m.relative);
     });
     globber.on("error", (err) => {
       reject(err);
