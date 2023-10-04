@@ -1,6 +1,11 @@
 import * as pomParser from "pom-parser";
 
-export const parsePom = (opts: any): Promise<any> => {
+interface PomParserOpts {
+  filePath?: string;
+  xmlContent?: string;
+}
+
+export const parsePom = (opts: PomParserOpts): Promise<any> => {
   return new Promise((resolve, reject) => {
     pomParser.parse(opts, (err, pomResponse) => {
       if (err) {

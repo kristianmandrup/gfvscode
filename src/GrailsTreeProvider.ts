@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { parsePom } from "./parse-pom";
+import { parseGradle } from "./parse-gradle";
 
 export class Dependency extends vscode.TreeItem {
   constructor(
@@ -81,6 +83,8 @@ export class Dependency extends vscode.TreeItem {
 //    + web-app
 //        + WEB-INF
 export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
+  grailsPath: string;
+
   constructor(private workspaceRoot: string) {}
 
   getTreeItem(element: Dependency): vscode.TreeItem {
@@ -92,70 +96,64 @@ export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
       vscode.window.showInformationMessage("No dependency in empty workspace");
       return Promise.resolve([]);
     }
+    this.grailsPath = this.workspaceRoot;
 
-    const views = "";
-    const controllers = "";
+    const pom = this.getPomDetails();
+    const gradle = this.getGradleDetails();
+    const bundles = this.getLocalizeBundles();
+  }
 
-    if (views) {
-      return Promise.resolve(
-        this.getViews(
-          path.join(
-            this.workspaceRoot,
-            "node_modules",
-            element.label,
-            "package.json"
-          )
-        )
-      );
-    }
-    const projectRootPath = path.join(this.workspaceRoot, "pom.xml");
+  private getPomDetails() {
     const pomPath = path.join(this.workspaceRoot, "pom.xml");
 
     if (this.pathExists(pomPath)) {
-      const packageJson = JSON.parse(fs.readFileSync(pomPath, "utf-8"));
-    }
-
-    if (controllers) {
-      if (this.pathExists(projectRootPath)) {
-        return Promise.resolve(this.getControllers(projectRootPath));
-      } else {
-        vscode.window.showInformationMessage("Workspace has no package.json");
-        return Promise.resolve([]);
-      }
+      const pom = parsePom({ filePath: pomPath }).then((res) => {});
     }
   }
 
-  private getLocalizeBundles(grailsPath: string): Dependency[] {
+  private getGradleDetails() {
+    const gradlePath = path.join(this.workspaceRoot, "build.gradle");
+
+    if (this.pathExists(gradlePath)) {
+      const pom = parseGradle(gradlePath).then((res) => {});
+    }
+  }
+
+  private getLocalizeBundles(): Dependency[] {
     const workspaceRoot = this.workspaceRoot;
-    if (this.pathExists(grailsPath) && workspaceRoot) {
+    const folderPath = path.join("i18", this.grailsPath);
+    if (this.pathExists(folderPath) && workspaceRoot) {
     }
     return [];
   }
 
   private getTagLibs(grailsPath: string): Dependency[] {
     const workspaceRoot = this.workspaceRoot;
-    if (this.pathExists(grailsPath) && workspaceRoot) {
+    const folderPath = path.join("taglibs", this.grailsPath);
+    if (this.pathExists(folderPath) && workspaceRoot) {
     }
     return [];
   }
 
   private getDomainModels(grailsPath: string): Dependency[] {
     const workspaceRoot = this.workspaceRoot;
-    if (this.pathExists(grailsPath) && workspaceRoot) {
+    const folderPath = path.join("domain", this.grailsPath);
+    if (this.pathExists(folderPath) && workspaceRoot) {
     }
     return [];
   }
 
   private getServices(grailsPath: string): Dependency[] {
     const workspaceRoot = this.workspaceRoot;
-    if (this.pathExists(grailsPath) && workspaceRoot) {
+    const folderPath = path.join("services", this.grailsPath);
+    if (this.pathExists(folderPath) && workspaceRoot) {
     }
     return [];
   }
 
-  private getControllers(grailsPath: string): Dependency[] {
-    const workspaceRoot = this.workspaceRoot;
-    if (this.pathExists(grailsPath) && workspaceRoot) {
+  private getControllers(): Dependency[] {
+    const folderPath = path.join("controllers", this.grailsPath);
+    if (this.pathExists(folderPath) && this.workspaceRoot) {
     }
     return [];
   }
@@ -163,49 +161,54 @@ export class GrailsTreeProvider implements vscode.TreeDataProvider<Dependency> {
   /**
    * Given the path to package.json, read all its dependencies and devDependencies.
    */
-  private getViews(grailsPath: string): Dependency[] {
-    const workspaceRoot = this.workspaceRoot;
-    if (this.pathExists(grailsPath) && workspaceRoot) {
-      const packageJson = JSON.parse(fs.readFileSync(grailsPath, "utf-8"));
-
-      const toDep = (moduleName: string, version: string): Dependency => {
-        if (
-          this.pathExists(path.join(workspaceRoot, "node_modules", moduleName))
-        ) {
-          return new Dependency(
-            moduleName,
-            version,
-            vscode.TreeItemCollapsibleState.Collapsed
-          );
-        } else {
-          return new Dependency(
-            moduleName,
-            version,
-            vscode.TreeItemCollapsibleState.None,
-            {
-              command: "extension.openPackageOnNpm",
-              title: "",
-              arguments: [moduleName],
-            }
-          );
-        }
-      };
-
-      const deps = packageJson.dependencies
-        ? Object.keys(packageJson.dependencies).map((dep) =>
-            toDep(dep, packageJson.dependencies[dep])
-          )
-        : [];
-      const devDeps = packageJson.devDependencies
-        ? Object.keys(packageJson.devDependencies).map((dep) =>
-            toDep(dep, packageJson.devDependencies[dep])
-          )
-        : [];
-      return deps.concat(devDeps);
-    } else {
-      return [];
+  private getViews(): Dependency[] {
+    const folderPath = path.join("views", this.grailsPath);
+    if (this.pathExists(folderPath) && this.workspaceRoot) {
     }
+    return [];
   }
+
+  //   if (this.pathExists(grailsPath) && workspaceRoot) {
+  //     const packageJson = JSON.parse(fs.readFileSync(grailsPath, "utf-8"));
+
+  //     const toDep = (moduleName: string, version: string): Dependency => {
+  //       if (
+  //         this.pathExists(path.join(workspaceRoot, "node_modules", moduleName))
+  //       ) {
+  //         return new Dependency(
+  //           moduleName,
+  //           version,
+  //           vscode.TreeItemCollapsibleState.Collapsed
+  //         );
+  //       } else {
+  //         return new Dependency(
+  //           moduleName,
+  //           version,
+  //           vscode.TreeItemCollapsibleState.None,
+  //           {
+  //             command: "extension.openPackageOnNpm",
+  //             title: "",
+  //             arguments: [moduleName],
+  //           }
+  //         );
+  //       }
+  //     };
+
+  //     const deps = packageJson.dependencies
+  //       ? Object.keys(packageJson.dependencies).map((dep) =>
+  //           toDep(dep, packageJson.dependencies[dep])
+  //         )
+  //       : [];
+  //     const devDeps = packageJson.devDependencies
+  //       ? Object.keys(packageJson.devDependencies).map((dep) =>
+  //           toDep(dep, packageJson.devDependencies[dep])
+  //         )
+  //       : [];
+  //     return deps.concat(devDeps);
+  //   } else {
+  //     return [];
+  //   }
+  // }
 
   private pathExists(p: string): boolean {
     try {
