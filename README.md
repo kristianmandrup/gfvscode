@@ -22,6 +22,38 @@ A Tree view with all the main entities of the Grais project, including
   - dependencies
   - plugins
 
+A sample Grails Tree Data Provider can be found in the `src` folder.
+
+`extension.ts`
+
+```js
+import * as vscode from "vscode";
+import { SampleTreeProvider } from "./sampleTree";
+
+export function activate(context: vscode.ExtensionContext) {
+  const treeDataProvider = new GrailsTreeProvider();
+  context.subscriptions.push(
+    vscode.window.registerTreeDataProvider("grailsTreeView", treeDataProvider)
+  );
+}
+```
+
+`package.json`
+
+```js
+"contributes": {
+    "views": {
+        "explorer": [
+            {
+                "id": "grailsTreeView",
+                "name": "Grails Tree",
+                "when": "resourceFilename =~ /test/"
+            }
+        ]
+    }
+}
+```
+
 ## Commands
 
 Activate commands with `CTRL+P` on Windows/Linux or `Cmd+P` on Mac.

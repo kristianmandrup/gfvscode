@@ -1,9 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 
-export class BaseItem extends vscode.TreeItem {}
-
-export class ControllerItem extends BaseItem {
+export class Item extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     private readonly version?: string,
@@ -15,7 +13,9 @@ export class ControllerItem extends BaseItem {
     this.tooltip = this.version ? `${this.label}-${this.version}` : this.label;
     this.description = this.version;
   }
+}
 
+export class ControllerItem extends Item {
   iconPath = {
     light: path.join(
       __filename,
@@ -38,19 +38,7 @@ export class ControllerItem extends BaseItem {
   contextValue = "Controller";
 }
 
-export class DomainItem extends BaseItem {
-  constructor(
-    public readonly label: string,
-    private readonly version?: string,
-    public readonly collapsibleState?: vscode.TreeItemCollapsibleState,
-    public readonly command?: vscode.Command
-  ) {
-    super(label, collapsibleState || vscode.TreeItemCollapsibleState.None);
-
-    this.tooltip = this.version ? `${this.label}-${this.version}` : this.label;
-    this.description = this.version;
-  }
-
+export class DomainItem extends Item {
   iconPath = {
     light: path.join(
       __filename,
@@ -66,22 +54,26 @@ export class DomainItem extends BaseItem {
   contextValue = "View";
 }
 
-export class ViewItem extends BaseItem {
-  constructor(
-    public readonly label: string,
-    private readonly version?: string,
-    public readonly collapsibleState?: vscode.TreeItemCollapsibleState,
-    public readonly command?: vscode.Command
-  ) {
-    super(label, collapsibleState || vscode.TreeItemCollapsibleState.None);
-
-    this.tooltip = this.version ? `${this.label}-${this.version}` : this.label;
-    this.description = this.version;
-  }
-
+export class ViewItem extends Item {
   iconPath = {
     light: path.join(__filename, "..", "..", "resources", "light", `view.svg`),
     dark: path.join(__filename, "..", "..", "resources", "dark", `view.svg`),
+  };
+
+  contextValue = "View";
+}
+
+export class ServiceItem extends Item {
+  iconPath = {
+    light: path.join(
+      __filename,
+      "..",
+      "..",
+      "resources",
+      "light",
+      `service.svg`
+    ),
+    dark: path.join(__filename, "..", "..", "resources", "dark", `service.svg`),
   };
 
   contextValue = "View";
