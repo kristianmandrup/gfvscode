@@ -1,24 +1,29 @@
 "use strict";
 
 import * as vscode from "vscode";
+import { GrailsTreeProvider } from "./GrailsTreeProvider";
 
-import { GrailsTreeProvider, Dependency } from "./GrailsTreeProvider";
-// import { JsonOutlineProvider } from "./jsonOutline";
-// import { FtpExplorer } from "./ftpExplorer";
-// import { FileExplorer } from "./fileExplorer";
-// import { TestViewDragAndDrop } from "./testViewDragAndDrop";
-// import { TestView } from "./testView";
+const getRootPath = () =>
+  vscode.workspace.workspaceFolders &&
+  vscode.workspace.workspaceFolders.length > 0
+    ? vscode.workspace.workspaceFolders[0].uri.fsPath
+    : undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-  const rootPath =
-    vscode.workspace.workspaceFolders &&
-    vscode.workspace.workspaceFolders.length > 0
-      ? vscode.workspace.workspaceFolders[0].uri.fsPath
-      : undefined;
+  const rootPath = getRootPath();
 
   // Samples of `window.registerTreeDataProvider`
   const grailsTreeProvider = new GrailsTreeProvider(rootPath);
   vscode.window.registerTreeDataProvider("grailsTree", grailsTreeProvider);
+
+  // Register command to open file
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.openFile", (uri: vscode.Uri) => {
+      if (uri) {
+        vscode.window.showTextDocument(uri);
+      }
+    })
+  );
 
   //   vscode.commands.registerCommand("nodeDependencies.refreshEntry", () =>
   //     grailsTreeProvider.refresh()
