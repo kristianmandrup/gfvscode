@@ -115,12 +115,12 @@ export class GrailsTreeProvider
   }
 
   // Maven Project Object Model
-  private getPomDetails() {
+  private async getPomDetails(): Promise<string[]> {
     const pomPath = path.join(this.workspaceRoot, "pom.xml");
 
-    if (this.pathExists(pomPath)) {
-      const pom = parsePom({ filePath: pomPath }).then((res) => {});
-    }
+    if (!this.pathExists(pomPath)) return [];
+    const pom = parsePom({ filePath: pomPath });
+    return [];
   }
 
   // Gradle build and dependencies tool

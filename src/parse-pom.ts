@@ -5,7 +5,35 @@ interface PomParserOpts {
   xmlContent?: string;
 }
 
-export const parsePom = (opts: PomParserOpts): Promise<any> => {
+export const properties = async (opts: PomParserOpts): Promise<any> => {
+  const pom = await parsePom(opts);
+  const project = pom.project;
+  const { name, description } = project.name;
+  const grailsVersion = project.properties["grails.version"];
+  return {
+    name,
+    description,
+    grailsVersion,
+  };
+};
+
+export const plugins = async (opts: PomParserOpts): Promise<string[]> => {
+  const pom = await parsePom(opts);
+  const project = pom.project;
+  const build = project.build;
+  const pluginList = build.plugins["plugin"];
+  return pluginList.map((plugin) => plugin.groupid);
+};
+
+export const dependencies = async (opts: PomParserOpts): Promise<string[]> => {
+  const pom = await parsePom(opts);
+  const project = pom.project;
+  const build = project.build;
+  const pluginList = build.dependencies["dependency"];
+  return pluginList.map((plugin) => plugin.groupid);
+};
+
+export const parsePom = async (opts: PomParserOpts): Promise<any> => {
   return new Promise((resolve, reject) => {
     pomParser.parse(opts, (err, pomResponse) => {
       if (err) {

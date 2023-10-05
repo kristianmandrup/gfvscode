@@ -98,6 +98,8 @@ Activate commands with `CTRL+P` on Windows/Linux or `Cmd+P` on Mac.
 - `Create Integration Test`
 - `Create POM XML`
 
+`grails create-pom org.mycompany`
+
 ### Generators
 
 - `Generate WAR`
