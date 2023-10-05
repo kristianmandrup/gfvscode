@@ -22,34 +22,39 @@ export class GrailsTreeItem extends vscode.TreeItem {
   ) {
     super(label, collapsibleState);
 
+    const iconPathTo = (fileName: string) =>
+      vscode.Uri.file(__dirname + `/icons/${fileName}.svg`);
+
     switch (itemType) {
       case GrailsItemType.Controller:
-        this.iconPath = vscode.Uri.file(__dirname + "/icons/controller.svg");
+        this.iconPath = iconPathTo("controller");
         break;
       case GrailsItemType.View:
-        this.iconPath = vscode.Uri.file(__dirname + "/icons/view.svg");
+        this.iconPath = iconPathTo("view");
         break;
       case GrailsItemType.DomainModel:
-        this.iconPath = vscode.Uri.file(__dirname + "/icons/domain.svg");
+        this.iconPath = this.iconPath = iconPathTo("domain");
         break;
       case GrailsItemType.Service:
-        this.iconPath = vscode.Uri.file(__dirname + "/icons/service.svg");
+        this.iconPath = this.iconPath = iconPathTo("service");
+        break;
+      case GrailsItemType.TagLib:
+        this.iconPath = this.iconPath = iconPathTo("taglib");
         break;
       case GrailsItemType.ControllerFolder:
-        this.iconPath = vscode.Uri.file(
-          __dirname + "/icons/controller-folder.svg"
-        );
+        this.iconPath = this.iconPath = iconPathTo("controller-folder");
         break;
       case GrailsItemType.ViewFolder:
-        this.iconPath = vscode.Uri.file(__dirname + "/icons/view-folder.svg");
+        this.iconPath = this.iconPath = iconPathTo("view-folder");
         break;
       case GrailsItemType.DomainModelFolder:
-        this.iconPath = vscode.Uri.file(__dirname + "/icons/domain-folder.svg");
+        this.iconPath = this.iconPath = iconPathTo("domain-folder");
         break;
       case GrailsItemType.ServiceFolder:
-        this.iconPath = vscode.Uri.file(
-          __dirname + "/icons/service-folder.svg"
-        );
+        this.iconPath = this.iconPath = iconPathTo("service-folder");
+        break;
+      case GrailsItemType.TagLibFolder:
+        this.iconPath = this.iconPath = iconPathTo("taglib-folder");
         break;
     }
   }

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { parsePom } from "./parse-pom";
+import { Pom } from "./parse-pom";
 import { parseGradle } from "./parse-gradle";
 import { readGlob } from "./glob";
 // import { Item, ControllerItem, DomainItem, ViewItem } from "./items";
@@ -115,12 +115,20 @@ export class GrailsTreeProvider
   }
 
   // Maven Project Object Model
-  private async getPomDetails(): Promise<string[]> {
+  private async getPomDetails(): Promise<any> {
     const pomPath = path.join(this.workspaceRoot, "pom.xml");
 
     if (!this.pathExists(pomPath)) return [];
-    const pom = parsePom({ filePath: pomPath });
-    return [];
+    const pom = new Pom({ filePath: pomPath });
+    await pom.init();
+    const project = pom.projectProps();
+    const dependencies = pom.dependencies();
+    const plugins = pom.plugins();
+    return {
+      project,
+      dependencies,
+      plugins,
+    };
   }
 
   // Gradle build and dependencies tool
