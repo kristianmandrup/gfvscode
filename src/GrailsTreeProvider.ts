@@ -16,6 +16,40 @@ export interface FileItem {
   filePath: string;
 }
 
+const itemValueMap: any = {
+  service: {
+    folder: "services",
+    findPattern: "*Service.groovy",
+    replacePattern: "Service.groovy",
+    type: GrailsItemType.Service,
+  },
+  domain: {
+    folder: "domain",
+    findPattern: "*Model.groovy",
+    replacePattern: "Model.groovy",
+    type: GrailsItemType.DomainModel,
+  },
+  taglib: {
+    folder: "taglibs",
+    findPattern: "*TagLib.groovy",
+    replacePattern: "TagLib.groovy",
+    type: GrailsItemType.TagLib,
+  },
+  view: {
+    folder: "views",
+    findPattern: "*View.groovy",
+    replacePattern: "View.groovy",
+    type: GrailsItemType.View,
+  },
+  controller: {
+    folder: "controllers",
+    findPattern: "*Controller.groovy",
+    replacePattern: "Controller.groovy",
+    type: GrailsItemType.Controller,
+  },
+};
+
+const getItemValuesFor = (key: string) => itemValueMap[key];
 // The grails application has the following folder structure.
 
 // ├── .gradle
@@ -147,130 +181,79 @@ export class GrailsTreeProvider
 
   private async getTagLibFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getTagLibItems();
-    return new GrailsTreeItem("models", vscode.TreeItemCollapsibleState.None, {
+    return new GrailsTreeItem("models", {
       type: GrailsItemType.TagLibFolder,
       children: items,
     });
   }
 
   private async getTagLibItems(): Promise<GrailsTreeItem[]> {
-    return (
-      await this.getFolderFileItems({
-        folder: "taglibs",
-        findPattern: "*TagLib.groovy",
-        replacePattern: "TagLib.groovy",
-      })
-    ).map(
-      ({ label, filePath }) =>
-        new GrailsTreeItem(label, vscode.TreeItemCollapsibleState.None, {
-          type: GrailsItemType.TagLib,
-          uri: filePath,
-        })
-    );
+    return this.getItemsFor("taglib");
   }
 
   private async getDomainModelFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getDomainModelItems();
-    return new GrailsTreeItem("models", vscode.TreeItemCollapsibleState.None, {
+    return new GrailsTreeItem("models", {
       type: GrailsItemType.DomainModelFolder,
       children: items,
     });
   }
 
   private async getDomainModelItems(): Promise<GrailsTreeItem[]> {
-    return (
-      await this.getFolderFileItems({
-        folder: "domain",
-        findPattern: "*Model.groovy",
-        replacePattern: "Model.groovy",
-      })
-    ).map(
-      ({ label, filePath }) =>
-        new GrailsTreeItem(label, vscode.TreeItemCollapsibleState.None, {
-          type: GrailsItemType.DomainModel,
-          uri: filePath,
-        })
-    );
+    return this.getItemsFor("domain");
   }
 
   private async getServiceFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getServiceItems();
-    return new GrailsTreeItem(
-      "services",
-      vscode.TreeItemCollapsibleState.None,
-      {
-        type: GrailsItemType.ServiceFolder,
-        children: items,
-      }
-    );
+    return new GrailsTreeItem("services", {
+      type: GrailsItemType.ServiceFolder,
+      children: items,
+    });
   }
 
   private async getServiceItems(): Promise<GrailsTreeItem[]> {
+    return this.getItemsFor("service");
+  }
+
+  private async getItemsFor(key: string): Promise<GrailsTreeItem[]> {
+    const { folder, findPattern, replacePattern, type } = getItemValuesFor(key);
     return (
       await this.getFolderFileItems({
-        folder: "services",
-        findPattern: "*Service.groovy",
-        replacePattern: "Service.groovy",
+        folder,
+        findPattern,
+        replacePattern,
       })
     ).map(
       ({ label, filePath }) =>
-        new GrailsTreeItem(label, vscode.TreeItemCollapsibleState.None, {
+        new GrailsTreeItem(label, {
           uri: filePath,
-          type: GrailsItemType.Service,
+          type,
         })
     );
   }
 
   private async getControllerFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getControllerItems();
-    return new GrailsTreeItem(
-      "controllers",
-      vscode.TreeItemCollapsibleState.None,
-      {
-        type: GrailsItemType.ControllerFolder,
-        children: items,
-      }
-    );
+    return new GrailsTreeItem("controllers", {
+      type: GrailsItemType.ControllerFolder,
+      children: items,
+    });
   }
 
   private async getControllerItems(): Promise<GrailsTreeItem[]> {
-    return (
-      await this.getFolderFileItems({
-        folder: "controllers",
-        findPattern: "*Controller.groovy",
-        replacePattern: "Controller.groovy",
-      })
-    ).map(
-      ({ label, filePath }) =>
-        new GrailsTreeItem(label, vscode.TreeItemCollapsibleState.None, {
-          uri: filePath,
-          type: GrailsItemType.Controller,
-        })
-    );
+    return this.getItemsFor("controller");
   }
 
   private async getViewFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getViewItems();
-    return new GrailsTreeItem("views", vscode.TreeItemCollapsibleState.None, {
+    return new GrailsTreeItem("views", {
       type: GrailsItemType.ViewFolder,
       children: items,
     });
   }
 
   private async getViewItems(): Promise<GrailsTreeItem[]> {
-    return (
-      await this.getFolderFileItems({
-        folder: "views",
-        findPattern: "*View.groovy",
-        replacePattern: "View.groovy",
-      })
-    ).map(
-      ({ label, filePath }) =>
-        new GrailsTreeItem(label, vscode.TreeItemCollapsibleState.None, {
-          uri: filePath,
-          type: GrailsItemType.View,
-        })
-    );
+    return this.getItemsFor("view");
   }
 
   private async getFolderFileItems({

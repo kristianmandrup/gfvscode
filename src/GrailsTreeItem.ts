@@ -15,6 +15,7 @@ export enum GrailsItemType {
 
 interface GrailsTreeItemOpts {
   type: GrailsItemType;
+  collapsibleState?: vscode.TreeItemCollapsibleState;
   uri?: string;
   children?: GrailsTreeItem[];
 }
@@ -28,11 +29,9 @@ export class GrailsTreeItem extends vscode.TreeItem {
 
   constructor(
     label: string,
-    collapsibleState: vscode.TreeItemCollapsibleState = vscode
-      .TreeItemCollapsibleState.None,
-    { uri, type, children }: GrailsTreeItemOpts
+    { collapsibleState, uri, type, children }: GrailsTreeItemOpts
   ) {
-    super(label, collapsibleState);
+    super(label, collapsibleState || vscode.TreeItemCollapsibleState.None);
     this.uri = uri;
     this.type = type;
     this.children = children;
