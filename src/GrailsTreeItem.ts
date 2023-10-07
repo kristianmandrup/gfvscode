@@ -11,6 +11,8 @@ export enum GrailsItemType {
   ServiceFolder,
   TagLib,
   TagLibFolder,
+  TestsFolder,
+  Test,
 }
 
 interface GrailsTreeItemOpts {

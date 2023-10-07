@@ -47,70 +47,31 @@ const itemValueMap: any = {
     replacePattern: "Controller.groovy",
     type: GrailsItemType.Controller,
   },
+  "unit-test": {
+    folder: "test/unit",
+    findPattern: "*(Spec|Test).groovy",
+    replacePattern: /(Spec|Test).groovy/,
+    type: GrailsItemType.Test,
+  },
+  "integration-test": {
+    folder: "test/integration",
+    findPattern: "*(Spec|Test).groovy",
+    replacePattern: /(Spec|Test).groovy/,
+    type: GrailsItemType.Test,
+  },
+  "functional-test": {
+    folder: "test/functional",
+    findPattern: "*(Spec|Test).groovy",
+    replacePattern: /(Spec|Test).groovy/,
+    type: GrailsItemType.Test,
+  },
 };
 
-const getItemValuesFor = (key: string) => itemValueMap[key];
-// The grails application has the following folder structure.
-
-// ├── .gradle
-// ├── build
-// ├── gradle
-// ├── grails-app
-// ├── src
-// ├── .gitignore.txt
-// ├── build.gradle
-// ├── gradle
-// ├── gradlew
-// ├── gradlew.bat
-// ├── grailsw
-// ├── grailsw.bat
-// └── grails-wrapper
-
-// grails/-app
-
-// ├── assets
-// ├── conf
-// ├── controllers
-// ├── domain
-// ├── i18n
-// ├── init
-// ├── services
-// ├── taglib
-// ├── utils
-// └── views
-
-// The directory structure is followed for the most part by all applications because
-// artifacts are defined primarily by their root folder.
-// Controller class names end in 'Controller', and taglibs and services have similar
-// naming conventions, but domain classes don't have any name restrictions.
-// So it's the location under grails-app/domain that defines a groovy class as a domain class.
-
-// %PROJECT_HOME%
-//     + grails-app
-//        + conf                 ---> location of configuration artifacts
-//            + hibernate        ---> optional hibernate config
-//            + spring           ---> optional spring config
-//        + controllers          ---> location of controller artifacts
-//        + domain               ---> location of domain classes
-//        + i18n                 ---> location of message bundles for i18n
-//        + services             ---> location of services
-//        + taglib               ---> location of tag libraries
-//        + util                 ---> location of special utility classes
-//        + views                ---> location of views
-//            + layouts          ---> location of layouts
-//    + lib
-//    + scripts                  ---> scripts
-//    + src
-//        + groovy               ---> optional; location for Groovy source files
-//                                    (of types other than those in grails-app/*)
-//        + java                 ---> optional; location for Java source files
-//    + test                     ---> generated test classes
-//    + web-app
-//        + WEB-INF
 export class GrailsTreeProvider
   implements vscode.TreeDataProvider<GrailsTreeItem>
 {
   grailsAppPath: string;
+  grailsConfig: any;
 
   constructor(private workspaceRoot: string) {}
 
@@ -118,12 +79,53 @@ export class GrailsTreeProvider
     return element;
   }
 
+  loadGrailsConfig() {
+    try {
+      const content = fs.readFileSync("grails-project.json", "utf8");
+      return JSON.parse(content) || {};
+    } catch (err) {
+      return {};
+    }
+  }
+
+  defaultGrailsConfig() {
+    return {
+      paths: {
+        application: "grails-app",
+        controllers: "grails-app/controllers",
+        models: "grails-app/domain",
+        views: "grails-app/views",
+      },
+    };
+  }
+
+  setGrailsConfig() {
+    const loadedConfig = this.loadGrailsConfig();
+    const defaultConfig = this.defaultGrailsConfig();
+    this.grailsConfig = {
+      ...defaultConfig,
+      ...loadedConfig,
+    };
+  }
+
+  getGrailsConfigPathFor = (key: string) => this.grailsConfig.paths[key];
+
+  getItemValuesFor = (key: string) => {
+    const configValues = itemValueMap[key];
+    configValues.folder =
+      this.getGrailsConfigPathFor(key) || configValues.folder;
+    return configValues;
+  };
+
   getChildren(element?: GrailsTreeItem): Thenable<GrailsTreeItem[]> {
     if (!this.workspaceRoot) {
       vscode.window.showInformationMessage("No Item in empty workspace");
       return Promise.resolve([]);
     }
-    this.grailsAppPath = path.join(this.workspaceRoot, "grails-app");
+    this.setGrailsConfig();
+    this.grailsAppPath =
+      this.grailsConfig.paths.application ||
+      path.join(this.workspaceRoot, "grails-app");
     return this.getFolders();
   }
 
@@ -136,6 +138,7 @@ export class GrailsTreeProvider
     const domainModelsFolder = await this.getDomainModelFolderItem();
     const viewsFolder = await this.getViewFolderItem();
     const tagLibsFolder = await this.getTagLibFolderItem();
+    const testsFolder = await this.getTestsFolderItem();
 
     return [
       controllersFolder,
@@ -179,6 +182,53 @@ export class GrailsTreeProvider
   //   return files.map((file) => file.replace("messages.properties", ""));
   // }
 
+  private async getTestsFolderItem(): Promise<GrailsTreeItem> {
+    const unitTests = await this.getUnitTestsFolderItem();
+    const integrationTests = await this.getIntegrationTestsFolderItem();
+    const functionalTests = await this.getFunctionalTestsFolderItem();
+    const items = [unitTests, integrationTests, functionalTests];
+    return new GrailsTreeItem("tests", {
+      type: GrailsItemType.TestsFolder,
+      children: items,
+    });
+  }
+
+  private async getUnitTestsFolderItem(): Promise<GrailsTreeItem> {
+    const items = await this.getUnitTestItems();
+    return new GrailsTreeItem("unit tests", {
+      type: GrailsItemType.TestsFolder,
+      children: items,
+    });
+  }
+
+  private async getIntegrationTestsFolderItem(): Promise<GrailsTreeItem> {
+    const items = await this.getIntegrationTestItems();
+    return new GrailsTreeItem("integration tests", {
+      type: GrailsItemType.TestsFolder,
+      children: items,
+    });
+  }
+
+  private async getFunctionalTestsFolderItem(): Promise<GrailsTreeItem> {
+    const items = await this.getFunctionalTestItems();
+    return new GrailsTreeItem("functional tests", {
+      type: GrailsItemType.TestsFolder,
+      children: items,
+    });
+  }
+
+  private async getUnitTestItems(): Promise<GrailsTreeItem[]> {
+    return this.getItemsFor("unit-test");
+  }
+
+  private async getIntegrationTestItems(): Promise<GrailsTreeItem[]> {
+    return this.getItemsFor("integration-test");
+  }
+
+  private async getFunctionalTestItems(): Promise<GrailsTreeItem[]> {
+    return this.getItemsFor("functional-test");
+  }
+
   private async getTagLibFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getTagLibItems();
     return new GrailsTreeItem("models", {
@@ -216,7 +266,8 @@ export class GrailsTreeProvider
   }
 
   private async getItemsFor(key: string): Promise<GrailsTreeItem[]> {
-    const { folder, findPattern, replacePattern, type } = getItemValuesFor(key);
+    const { folder, findPattern, replacePattern, type } =
+      this.getItemValuesFor(key);
     return (
       await this.getFolderFileItems({
         folder,
