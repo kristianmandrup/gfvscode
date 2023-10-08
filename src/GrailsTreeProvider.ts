@@ -5,6 +5,7 @@ import { Pom } from "./parse-pom";
 import { parseGradle } from "./parse-gradle";
 import { readGlob } from "./glob";
 import { GrailsItemType, GrailsTreeItem } from "./GrailsTreeItem";
+import { pathExists } from "./extension";
 
 export interface FolderMatchParams {
   folder: string;
@@ -157,7 +158,7 @@ export class GrailsTreeProvider
   private async getPomDetails(): Promise<any> {
     const pomPath = path.join(this.workspaceRoot, "pom.xml");
 
-    if (!this.pathExists(pomPath)) return [];
+    if (!pathExists(pomPath)) return [];
     const pom = new Pom({ filePath: pomPath });
     await pom.init();
     const project = pom.projectProps();
@@ -174,9 +175,11 @@ export class GrailsTreeProvider
   private getGradleDetails() {
     const gradlePath = path.join(this.workspaceRoot, "build.gradle");
 
-    if (this.pathExists(gradlePath)) {
-      const pom = parseGradle(gradlePath).then((res) => {});
+    if (pathExists(gradlePath)) {
+      const gradle = parseGradle(gradlePath).then((res) => {});
+      return gradle;
     }
+    return {};
   }
 
   // private async getLocalizeBundles(): Promise<string[]> {
@@ -320,21 +323,11 @@ export class GrailsTreeProvider
     if (folder.includes(`$app`)) {
       folderPath.replace(`$app`, this.grailsAppPath);
     }
-    if (!this.pathExists(folderPath)) return [];
+    if (!pathExists(folderPath)) return [];
     const files = await readGlob(folderPath, findPattern);
     return files.map((filePath) => ({
       label: filePath.replace(replacePattern, ""),
       filePath,
     }));
-  }
-
-  private pathExists(p: string): boolean {
-    try {
-      fs.accessSync(p);
-    } catch (err) {
-      return false;
-    }
-
-    return true;
   }
 }

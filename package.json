@@ -24,7 +24,9 @@
     "grails",
     "groovy"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "workspaceContains:**/grails-app/**"
+  ],
   "main": "./extension.js",
   "views": {
     "explorer": [
@@ -32,7 +34,8 @@
         "id": "grailsTree",
         "icon": "images/grails_logo.svg",
         "contextualTitle": "Grails Explorer",
-        "name": "Grails structure"
+        "name": "Grails structure",
+        "when": "inGrailsProject"
       }
     ]
   },
@@ -41,7 +44,7 @@
       "commandPalette": [
         {
           "command": "myExtension.sayHello",
-          "when": "editorLangId == markdown"
+          "when": "editorLangId == groovy"
         }
       ]
     },
@@ -49,182 +52,218 @@
       {
         "command": "gfvscode.runnApp",
         "category": "Grails",
-        "title": "Run App"
+        "title": "Run App",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.stopApp",
         "category": "Grails",
-        "title": "Stop App"
+        "title": "Stop App",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.runCommand",
         "category": "Grails",
-        "title": "Run Command"
+        "title": "Run Command",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.cleanProject",
         "category": "Grails",
-        "title": "Clean Project"
+        "title": "Clean Project",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.compile",
         "category": "Grails",
-        "title": "Compile Project"
+        "title": "Compile Project",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.dependencyReport",
         "category": "Grails",
-        "title": "Grails Dependency Report"
+        "title": "Grails Dependency Report",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.help",
         "category": "Grails",
-        "title": "Grails Help"
+        "title": "Grails Help",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.listPlugins",
         "category": "Grails",
-        "title": "List Plugins"
+        "title": "List Plugins",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.console",
         "category": "Grails",
-        "title": "Console"
+        "title": "Console",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.stats",
         "category": "Grails",
-        "title": "Stats"
+        "title": "Stats",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.generateDoc",
         "category": "Grails",
-        "title": "Generate Documentation"
+        "title": "Generate Documentation",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createWar",
         "category": "Grails",
-        "title": "Generate WAR"
+        "title": "Generate WAR",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.packagePlugin",
         "category": "Grails Plugin",
-        "title": "Package Plugin"
+        "title": "Package Plugin",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.mavenInstall",
         "category": "Grails Plugin",
-        "title": "Maven Install"
+        "title": "Maven Install",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.migrateDocs",
         "category": "Grails",
-        "title": "Migrate Docs"
+        "title": "Migrate Docs",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.addProxy",
         "category": "Grails",
-        "title": "Add Proxy Configuration"
+        "title": "Add Proxy Configuration",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.addProxyWithUser",
         "category": "Grails",
-        "title": "Add Proxy Configuration (With User & Password)"
+        "title": "Add Proxy Configuration (With User & Password)",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.clearProxy",
         "category": "Grails",
-        "title": "Clear Proxy Configuration"
+        "title": "Clear Proxy Configuration",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.removeProxy",
         "category": "Grails",
-        "title": "Remove Proxy Configuration"
+        "title": "Remove Proxy Configuration",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.setProxy",
         "category": "Grails",
-        "title": "Set Proxy Configuration"
+        "title": "Set Proxy Configuration",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createApp",
         "category": "Grails",
-        "title": "Create App"
+        "title": "Create App",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createPlugin",
         "category": "Grails",
-        "title": "Create Plugin"
+        "title": "Create Plugin",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createDomainClass",
         "category": "Grails",
-        "title": "Create Domain Class"
+        "title": "Create Domain Class",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createController",
         "category": "Grails",
-        "title": "Create Controller"
+        "title": "Create Controller",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createService",
         "category": "Grails",
-        "title": "Create Service"
+        "title": "Create Service",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createFilter",
         "category": "Grails",
-        "title": "Create Filter"
+        "title": "Create Filter",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createInterceptor",
         "category": "Grails",
-        "title": "Create Interceptor (Grails 3+)"
+        "title": "Create Interceptor (Grails 3+)",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createHibernateCfg",
         "category": "Grails",
-        "title": "Create Hibernate Configuration File XML"
+        "title": "Create Hibernate Configuration File XML",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createScript",
         "category": "Grails",
-        "title": "Create Script"
+        "title": "Create Script",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createTaglib",
         "category": "Grails",
-        "title": "Create Taglib"
+        "title": "Create Taglib",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createUnitTest",
         "category": "Grails",
-        "title": "Create Unit Test"
+        "title": "Create Unit Test",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createIntegrationTest",
         "category": "Grails",
-        "title": "Create Integration Test"
+        "title": "Create Integration Test",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.createPOM",
         "category": "Grails",
-        "title": "Create POM XML"
+        "title": "Create POM XML",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.generateViews",
         "category": "Grails",
-        "title": "Generate Views"
+        "title": "Generate Views",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.generateControllers",
         "category": "Grails",
-        "title": "Generate Controllers"
+        "title": "Generate Controllers",
+        "when": "inGrailsProject"
       },
       {
         "command": "gfvscode.generateAll",
         "category": "Grails",
-        "title": "Generate All (Views and Controllers)"
+        "title": "Generate All (Views and Controllers)",
+        "when": "inGrailsProject"
       }
     ]
   },

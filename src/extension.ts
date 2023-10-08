@@ -1,6 +1,8 @@
 "use strict";
 
 import * as vscode from "vscode";
+import * as fs from "fs";
+import * as path from "path";
 import { GrailsTreeProvider } from "./GrailsTreeProvider";
 
 const getRootPath = () =>
@@ -9,9 +11,28 @@ const getRootPath = () =>
     ? vscode.workspace.workspaceFolders[0].uri.fsPath
     : undefined;
 
+export const pathExists = (p: string): boolean => {
+  try {
+    fs.accessSync(p);
+  } catch (err) {
+    return false;
+  }
+
+  return true;
+};
+
+const checkForGrails = (rootPath: string): boolean => {
+  const filePath = path.join(rootPath, "grails-project.json");
+  return pathExists(filePath);
+};
+
 export function activate(context: vscode.ExtensionContext) {
   const rootPath = getRootPath();
 
+  let isGrailsProject = checkForGrails(rootPath); // implement this function to check necessary conditions
+  if (isGrailsProject) {
+    vscode.commands.executeCommand("setContext", "inGrailsProject", true);
+  }
   // Samples of `window.registerTreeDataProvider`
   const grailsTreeProvider = new GrailsTreeProvider(rootPath);
   vscode.window.registerTreeDataProvider("grailsTree", grailsTreeProvider);
