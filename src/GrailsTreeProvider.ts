@@ -18,49 +18,49 @@ export interface FileItem {
 
 const itemValueMap: any = {
   service: {
-    folder: "services",
+    folder: "$app/services",
     findPattern: "*Service.groovy",
     replacePattern: "Service.groovy",
     type: GrailsItemType.Service,
   },
   domain: {
-    folder: "domain",
+    folder: "$app/domain",
     findPattern: "*Model.groovy",
     replacePattern: "Model.groovy",
     type: GrailsItemType.DomainModel,
   },
   taglib: {
-    folder: "taglibs",
+    folder: "$app/taglibs",
     findPattern: "*TagLib.groovy",
     replacePattern: "TagLib.groovy",
     type: GrailsItemType.TagLib,
   },
   view: {
-    folder: "views",
+    folder: "$app/views",
     findPattern: "*View.groovy",
     replacePattern: "View.groovy",
     type: GrailsItemType.View,
   },
   controller: {
-    folder: "controllers",
+    folder: "$app/controllers",
     findPattern: "*Controller.groovy",
     replacePattern: "Controller.groovy",
     type: GrailsItemType.Controller,
   },
   "unit-test": {
-    folder: "test/unit",
+    folder: "$app/test/unit",
     findPattern: "*(Spec|Test).groovy",
     replacePattern: /(Spec|Test).groovy/,
     type: GrailsItemType.Test,
   },
   "integration-test": {
-    folder: "test/integration",
+    folder: "$app/test/integration",
     findPattern: "*(Spec|Test).groovy",
     replacePattern: /(Spec|Test).groovy/,
     type: GrailsItemType.Test,
   },
   "functional-test": {
-    folder: "test/functional",
+    folder: "$app/test/functional",
     findPattern: "*(Spec|Test).groovy",
     replacePattern: /(Spec|Test).groovy/,
     type: GrailsItemType.Test,
@@ -92,9 +92,13 @@ export class GrailsTreeProvider
     return {
       paths: {
         application: "grails-app",
-        controllers: "grails-app/controllers",
-        models: "grails-app/domain",
-        views: "grails-app/views",
+        controller: "grails-app/controllers",
+        domain: "grails-app/domain",
+        view: "grails-app/views",
+        taglib: "grails-app/taglibs",
+        "unit-test": "grails-app/test/unit-tests",
+        "integration-test": "grails-app/test/integration-tests",
+        "functional-test": "grails-app/test/functional-tests",
       },
     };
   }
@@ -265,24 +269,6 @@ export class GrailsTreeProvider
     return this.getItemsFor("service");
   }
 
-  private async getItemsFor(key: string): Promise<GrailsTreeItem[]> {
-    const { folder, findPattern, replacePattern, type } =
-      this.getItemValuesFor(key);
-    return (
-      await this.getFolderFileItems({
-        folder,
-        findPattern,
-        replacePattern,
-      })
-    ).map(
-      ({ label, filePath }) =>
-        new GrailsTreeItem(label, {
-          uri: filePath,
-          type,
-        })
-    );
-  }
-
   private async getControllerFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getControllerItems();
     return new GrailsTreeItem("controllers", {
@@ -307,12 +293,33 @@ export class GrailsTreeProvider
     return this.getItemsFor("view");
   }
 
+  private async getItemsFor(key: string): Promise<GrailsTreeItem[]> {
+    const { folder, findPattern, replacePattern, type } =
+      this.getItemValuesFor(key);
+    return (
+      await this.getFolderFileItems({
+        folder,
+        findPattern,
+        replacePattern,
+      })
+    ).map(
+      ({ label, filePath }) =>
+        new GrailsTreeItem(label, {
+          uri: filePath,
+          type,
+        })
+    );
+  }
+
   private async getFolderFileItems({
     folder,
     findPattern,
     replacePattern,
   }: FolderMatchParams): Promise<FileItem[]> {
-    const folderPath = path.join(this.grailsAppPath, folder);
+    let folderPath = path.join(this.workspaceRoot, folder);
+    if (folder.includes(`$app`)) {
+      folderPath.replace(`$app`, this.grailsAppPath);
+    }
     if (!this.pathExists(folderPath)) return [];
     const files = await readGlob(folderPath, findPattern);
     return files.map((filePath) => ({
