@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 
 export enum GrailsItemType {
   Controller,
@@ -46,39 +47,41 @@ export class GrailsTreeItem extends vscode.TreeItem {
       };
     }
 
-    const iconPathTo = (fileName: string) =>
-      vscode.Uri.file(__dirname + `/icons/${fileName}.svg`);
+    const iconPathTo = (fileName: string) => {
+      const filePath = path.resolve(__dirname, `../icons/${fileName}.svg`);
+      return vscode.Uri.file(filePath);
+    };
 
     switch (type) {
       case GrailsItemType.Controller:
-        this.iconPath = iconPathTo("controller");
+        this.iconPath = iconPathTo("file_type_config");
         break;
       case GrailsItemType.View:
-        this.iconPath = iconPathTo("view");
+        this.iconPath = iconPathTo("file_type_view");
         break;
       case GrailsItemType.DomainModel:
-        this.iconPath = this.iconPath = iconPathTo("domain");
+        this.iconPath = this.iconPath = iconPathTo("file_type_taskfile");
         break;
       case GrailsItemType.Service:
-        this.iconPath = this.iconPath = iconPathTo("service");
+        this.iconPath = this.iconPath = iconPathTo("file_type_bat");
         break;
       case GrailsItemType.TagLib:
-        this.iconPath = this.iconPath = iconPathTo("taglib");
+        this.iconPath = this.iconPath = iconPathTo("folder_type_view");
         break;
       case GrailsItemType.ControllerFolder:
-        this.iconPath = this.iconPath = iconPathTo("controller-folder");
+        this.iconPath = this.iconPath = iconPathTo("folder_type_controller");
         break;
       case GrailsItemType.ViewFolder:
-        this.iconPath = this.iconPath = iconPathTo("view-folder");
+        this.iconPath = this.iconPath = iconPathTo("folder_type_view");
         break;
       case GrailsItemType.DomainModelFolder:
-        this.iconPath = this.iconPath = iconPathTo("domain-folder");
+        this.iconPath = this.iconPath = iconPathTo("folder_type_model");
         break;
       case GrailsItemType.ServiceFolder:
-        this.iconPath = this.iconPath = iconPathTo("service-folder");
+        this.iconPath = this.iconPath = iconPathTo("folder_type_services");
         break;
       case GrailsItemType.TagLibFolder:
-        this.iconPath = this.iconPath = iconPathTo("taglib-folder");
+        this.iconPath = this.iconPath = iconPathTo("folder_type_src");
         break;
     }
   }
