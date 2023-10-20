@@ -3,6 +3,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { activateCommands } from "./commands";
 import { GrailsTreeProvider } from "./GrailsTreeProvider";
 
 const getRootPath = () =>
@@ -27,6 +28,8 @@ const checkForGrails = (rootPath: string): boolean => {
 };
 
 export function activate(context: vscode.ExtensionContext) {
+  activateCommands();
+
   const rootPath = getRootPath();
 
   let isGrailsProject = checkForGrails(rootPath); // implement this function to check necessary conditions

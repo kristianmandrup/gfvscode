@@ -18,11 +18,21 @@
     "url": "https://github.com/GuiOrsolon/gfvscode"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Language Packs",
+    "Extension Packs",
+    "Visualization"
   ],
   "keywords": [
     "grails",
     "groovy"
+  ],
+  "extensionPack": [
+    "marlon407.code-groovy",
+    "NicolasVuillamy.vscode-groovy-lint",
+    "naco-siren.gradle-language",
+    "vscode-gradlevscjava.vscode-gradle",
+    "vscjava.vscode-maven"
   ],
   "activationEvents": [
     "workspaceContains:**/grails-app/**"
