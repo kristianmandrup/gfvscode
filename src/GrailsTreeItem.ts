@@ -6,13 +6,15 @@ export enum GrailsItemType {
   View,
   DomainModel,
   Service,
+  Style,,
   ControllerFolder,
   ViewFolder,
   DomainModelFolder,
   ServiceFolder,
   TagLib,
+  StyleFolder,
   TagLibFolder,
-  TestsFolder,
+  TestFolder,
   Test,
 }
 
@@ -52,9 +54,21 @@ export class GrailsTreeItem extends vscode.TreeItem {
       return vscode.Uri.file(filePath);
     };
 
+    if (this.children.length !== 0) {
+      this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+    } else {
+      this.collapsibleState = vscode.TreeItemCollapsibleState.None;
+    }
+    const closed =
+      this.collapsibleState == vscode.TreeItemCollapsibleState.Collapsed;
+    const opened = !!closed;
+    let iconFile;
     switch (type) {
       case GrailsItemType.Controller:
-        this.iconPath = iconPathTo("file_type_config");
+        this.iconPath = {
+          dark: iconPathTo("file_type_config"),
+          light: iconPathTo("file_type_light_config"),
+        };
         break;
       case GrailsItemType.View:
         this.iconPath = iconPathTo("file_type_view");
@@ -68,20 +82,45 @@ export class GrailsTreeItem extends vscode.TreeItem {
       case GrailsItemType.TagLib:
         this.iconPath = this.iconPath = iconPathTo("folder_type_view");
         break;
+      case GrailsItemType.Test:
+        this.iconPath = this.iconPath = iconPathTo("folder_type_test");
+        break;
+      case GrailsItemType.Style:
+        this.iconPath = this.iconPath = iconPathTo("folder_type_stylable");
+        break;
+  
+
       case GrailsItemType.ControllerFolder:
-        this.iconPath = this.iconPath = iconPathTo("folder_type_controller");
+        iconFile = closed
+          ? "folder_type_controller"
+          : "folder_type_controller_opened";
+        this.iconPath = iconPathTo(iconFile);
         break;
       case GrailsItemType.ViewFolder:
-        this.iconPath = this.iconPath = iconPathTo("folder_type_view");
+        iconFile = closed ? "folder_type_view" : "folder_type_view_opened";
+        this.iconPath = iconPathTo(iconFile);
         break;
       case GrailsItemType.DomainModelFolder:
-        this.iconPath = this.iconPath = iconPathTo("folder_type_model");
+        iconFile = closed ? "folder_type_model" : "folder_type_model_opened";
+        this.iconPath = iconPathTo(iconFile);
         break;
       case GrailsItemType.ServiceFolder:
-        this.iconPath = this.iconPath = iconPathTo("folder_type_services");
+        iconFile = closed
+          ? "folder_type_services"
+          : "folder_type_services_opened";
+        this.iconPath = this.iconPath = iconPathTo(iconFile);
         break;
       case GrailsItemType.TagLibFolder:
-        this.iconPath = this.iconPath = iconPathTo("folder_type_src");
+        iconFile = closed ? "folder_type_src" : "folder_type_src_opened";
+        this.iconPath = iconPathTo(iconFile);
+        break;
+      case GrailsItemType.TestFolder:
+        iconFile = closed ? "folder_type_test" : "folder_type_test_opened";
+        this.iconPath = iconPathTo(iconFile);
+        break;  
+      case GrailsItemType.StyleFolder:
+        iconFile = closed ? "folder_type_theme" : "folder_type_theme_opened";
+        this.iconPath = iconPathTo(iconFile);
         break;
     }
   }
