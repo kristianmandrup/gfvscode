@@ -278,7 +278,7 @@ export class GrailsTreeProvider
   }
 
   private async getFontItems(): Promise<GrailsTreeItem[]> {
-    return this.getItemsFor("fonts");
+    return this.getItemsFor("fonts", false);
   }
 
   private async getStyleItems(): Promise<GrailsTreeItem[]> {
@@ -337,7 +337,23 @@ export class GrailsTreeProvider
     return this.getItemsFor("view");
   }
 
-  private async getItemsFor(key: string): Promise<GrailsTreeItem[]> {
+  private fileItem(label: string, type: any, filePath?: string) {
+    return new GrailsTreeItem(label, {
+      uri: filePath,
+      type,
+    });
+  }
+
+  private displayItem(label: string, type: any) {
+    return new GrailsTreeItem(label, {
+      type,
+    });
+  }
+
+  private async getItemsFor(
+    key: string,
+    canOpen = true
+  ): Promise<GrailsTreeItem[]> {
     const { folder, findPattern, replacePattern, type } =
       this.getItemValuesFor(key);
     return (
@@ -346,12 +362,10 @@ export class GrailsTreeProvider
         findPattern,
         replacePattern,
       })
-    ).map(
-      ({ label, filePath }) =>
-        new GrailsTreeItem(label, {
-          uri: filePath,
-          type,
-        })
+    ).map(({ label, filePath }) =>
+      canOpen
+        ? this.fileItem(label, filePath, type)
+        : this.displayItem(label, type)
     );
   }
 
