@@ -36,6 +36,18 @@ const itemValueMap: any = {
     replacePattern: "TagLib.groovy",
     type: GrailsItemType.TagLib,
   },
+  styles: {
+    folder: "$app/styles",
+    findPattern: "*.css",
+    replacePattern: ".css",
+    type: GrailsItemType.Style,
+  },
+  fonts: {
+    folder: "$app/fonts",
+    findPattern: "*.{ttf,otf,woff}",
+    replacePattern: ".css",
+    type: GrailsItemType.Font,
+  },
   view: {
     folder: "$app/views",
     findPattern: "*View.groovy",
@@ -144,6 +156,8 @@ export class GrailsTreeProvider
     const viewsFolder = await this.getViewFolderItem();
     const tagLibsFolder = await this.getTagLibFolderItem();
     const testsFolder = await this.getTestsFolderItem();
+    const stylesFolder = await this.getStyleFolderItem();
+    const fontsFolder = await this.getFontsFolderItem();
 
     return [
       controllersFolder,
@@ -151,6 +165,9 @@ export class GrailsTreeProvider
       servicesFolder,
       viewsFolder,
       tagLibsFolder,
+      testsFolder,
+      stylesFolder,
+      fontsFolder,
     ];
   }
 
@@ -189,13 +206,29 @@ export class GrailsTreeProvider
   //   return files.map((file) => file.replace("messages.properties", ""));
   // }
 
+  private async getStyleFolderItem(): Promise<GrailsTreeItem> {
+    const items = await this.getStyleItems();
+    return new GrailsTreeItem("styles", {
+      type: GrailsItemType.StyleFolder,
+      children: items,
+    });
+  }
+
+  private async getFontsFolderItem(): Promise<GrailsTreeItem> {
+    const items = await this.getFontItems();
+    return new GrailsTreeItem("fonts", {
+      type: GrailsItemType.StyleFolder,
+      children: items,
+    });
+  }
+
   private async getTestsFolderItem(): Promise<GrailsTreeItem> {
     const unitTests = await this.getUnitTestsFolderItem();
     const integrationTests = await this.getIntegrationTestsFolderItem();
     const functionalTests = await this.getFunctionalTestsFolderItem();
     const items = [unitTests, integrationTests, functionalTests];
     return new GrailsTreeItem("tests", {
-      type: GrailsItemType.TestsFolder,
+      type: GrailsItemType.TestFolder,
       children: items,
     });
   }
@@ -203,7 +236,7 @@ export class GrailsTreeProvider
   private async getUnitTestsFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getUnitTestItems();
     return new GrailsTreeItem("unit tests", {
-      type: GrailsItemType.TestsFolder,
+      type: GrailsItemType.TestFolder,
       children: items,
     });
   }
@@ -211,7 +244,7 @@ export class GrailsTreeProvider
   private async getIntegrationTestsFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getIntegrationTestItems();
     return new GrailsTreeItem("integration tests", {
-      type: GrailsItemType.TestsFolder,
+      type: GrailsItemType.TestFolder,
       children: items,
     });
   }
@@ -219,7 +252,7 @@ export class GrailsTreeProvider
   private async getFunctionalTestsFolderItem(): Promise<GrailsTreeItem> {
     const items = await this.getFunctionalTestItems();
     return new GrailsTreeItem("functional tests", {
-      type: GrailsItemType.TestsFolder,
+      type: GrailsItemType.TestFolder,
       children: items,
     });
   }
@@ -242,6 +275,14 @@ export class GrailsTreeProvider
       type: GrailsItemType.TagLibFolder,
       children: items,
     });
+  }
+
+  private async getFontItems(): Promise<GrailsTreeItem[]> {
+    return this.getItemsFor("fonts");
+  }
+
+  private async getStyleItems(): Promise<GrailsTreeItem[]> {
+    return this.getItemsFor("styles");
   }
 
   private async getTagLibItems(): Promise<GrailsTreeItem[]> {
